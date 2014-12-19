@@ -1,5 +1,6 @@
 ---
-- hosts: http
+- hosts: check-http
+  sudo: yes
   tasks:
     - name: restart nginx
       service:
