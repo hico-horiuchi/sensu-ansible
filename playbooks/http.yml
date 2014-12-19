@@ -1,0 +1,15 @@
+---
+- hosts: http
+  tasks:
+    - name: restart nginx
+      service:
+        name=nginx
+        enabled=yes
+        state=restarted
+
+    - name: notify to typetalk
+      typetalk:
+        client_id={{ typetalk_client_id }}
+        client_secret={{ typetalk_client_secret }}
+        topic={{ typetalk_topic }}
+        msg='[sensu] restart nginx on {{ ansible_hostname }}'

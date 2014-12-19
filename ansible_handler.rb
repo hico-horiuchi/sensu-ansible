@@ -16,10 +16,9 @@ class AnsibleHandler < Sensu::Handler
     }
   end
 
-  def generate_hostfile(event)
+  def generate_hostfile(event, check)
     client = event['client']['name']
     address = event['client']['address']
-    check = event['check']['name']
 
     hostfile = "/tmp/#{Time.now.strftime '%y%m%d%H%M%S'}.hosts"
     typetalk = typetalk_vars
@@ -37,12 +36,12 @@ class AnsibleHandler < Sensu::Handler
   end
 
   def handle
-    check = @event['check']['name']
     status = @event['check']['status']
     occurrences = @event['occurrences']
     return if status < 2 || occurrences > 1
 
-    hostfile = generate_hostfile @event
+    check = event['check']['name'].gsub /^check-/, ''
+    hostfile = generate_hostfile @event, check
     result = `ansible-playbook -i #{hostfile} #{playbooks}/#{check}.yml`
     unless $?.to_i == 0
       puts result
